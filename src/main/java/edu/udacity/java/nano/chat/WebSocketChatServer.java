@@ -1,9 +1,12 @@
 package edu.udacity.java.nano.chat;
 
+import com.alibaba.fastjson.JSON;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 @Component
-@ServerEndpoint("/chat")
+@ServerEndpoint("/chat/{username}")
 public class WebSocketChatServer {
 
     /**
@@ -24,15 +27,23 @@ public class WebSocketChatServer {
     private static Map<String, Session> onlineSessions = new ConcurrentHashMap<>();
 
     private static void sendMessageToAll(String msg) {
-        //TODO: add send message method.
+        try {
+            for(Session session:onlineSessions.values()){
+                session.getBasicRemote().sendText(msg);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Open connection, 1) add session, 2) add user.
      */
     @OnOpen
-    public void onOpen(Session session) {
-        //TODO: add on open connection.
+    public void onOpen(Session session, @PathParam("username") String username) {
+        onlineSessions.put(session.getId(), session);
+        Message message = new Message(null, null, onlineSessions.size(), "ENTER");
+        sendMessageToAll(JSON.toJSONString(message));
     }
 
     /**
@@ -40,7 +51,9 @@ public class WebSocketChatServer {
      */
     @OnMessage
     public void onMessage(Session session, String jsonStr) {
-        //TODO: add send message.
+        Message message = JSON.parseObject(jsonStr, Message.class);
+        message.setOnlineCount(onlineSessions.values().size());
+        sendMessageToAll(JSON.toJSONString(message));
     }
 
     /**
@@ -48,7 +61,12 @@ public class WebSocketChatServer {
      */
     @OnClose
     public void onClose(Session session) {
-        //TODO: add close connection.
+        try{
+            onlineSessions.remove(session.getId());
+            session.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
