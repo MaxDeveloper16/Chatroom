@@ -1,0 +1,7 @@
+-------------------------------------------------------------------------------
+Test set: edu.udacity.java.nano.chat.WebSocketChatServerTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.215 s <<< FAILURE! - in edu.udacity.java.nano.chat.WebSocketChatServerTest
+initializationError(edu.udacity.java.nano.chat.WebSocketChatServerTest)  Time elapsed: 0.009 s  <<< ERROR!
+java.lang.Exception: No runnable methods
+
