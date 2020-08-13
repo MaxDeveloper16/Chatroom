@@ -19,3 +19,7 @@ Implement all TODOs inside WebSocketChatServer follow each method description.
 ### Run the application with command
 mvn build; mvn spring-boot:run
 
+### deploy to Heroku
+add Procfile 
+web: java -jar target/chatroom-starter-0.0.1-SNAPSHOT.jar
+
